@@ -1,0 +1,2949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Owner Stays — Q1 2026 Analysis</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #273449;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #60a5fa;
+    --warn: #f59e0b;
+    --danger: #fb7185;
+    --good: #4ade80;
+    --hi: #fcd34d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 24px;
+    line-height: 1.5;
+  }
+  h1 { margin: 0 0 4px; font-size: 26px; }
+  h2 { margin: 32px 0 12px; font-size: 19px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  h3 { margin: 20px 0 8px; font-size: 15px; color: var(--hi); font-weight: 600; }
+  .subtitle { color: var(--muted); margin-bottom: 24px; font-size: 14px; }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .kpi-label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .kpi-value { font-size: 26px; font-weight: 600; margin-top: 4px; }
+  .kpi-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+  th {
+    background: var(--panel-2);
+    text-align: left;
+    padding: 8px 10px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  th:hover { color: var(--text); }
+  th.sorted-asc::after { content: ' ▲'; color: var(--accent); }
+  th.sorted-desc::after { content: ' ▼'; color: var(--accent); }
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #1f2a3d;
+  }
+  tr:hover td { background: #1a2436; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.center { text-align: center; }
+
+  .pct-bar {
+    display: inline-block;
+    min-width: 38px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .pct-low { background: #1e3a4d; color: #60a5fa; }
+  .pct-mid { background: #4a3a1a; color: #fbbf24; }
+  .pct-high { background: #4a1e26; color: #fb7185; }
+
+  .chip {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--panel-2);
+    color: var(--muted);
+    margin-right: 4px;
+  }
+  .chip-warn { background: #4a3a1a; color: #fbbf24; }
+  .chip-danger { background: #4a1e26; color: #fb7185; }
+  .chip-hi { background: #422c0d; color: #fcd34d; }
+
+  .copy-btn {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    float: right;
+    margin-top: -4px;
+  }
+  .copy-btn:hover { background: #334966; }
+  .copy-btn.copied { background: #14532d; color: #4ade80; }
+
+  .filter-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-row input[type=text] {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    min-width: 220px;
+  }
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .toggle input { accent-color: var(--accent); }
+
+  .note {
+    background: #1a2436;
+    border-left: 3px solid var(--accent);
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    border-radius: 0 6px 6px 0;
+  }
+  .note strong { color: var(--text); }
+
+  .block-summary {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .block-summary strong { color: var(--text); }
+
+  .listing-name { color: var(--text); font-weight: 500; }
+
+  @media (max-width: 700px) {
+    body { padding: 12px; }
+    table { font-size: 12px; }
+    th, td { padding: 6px 6px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Owner Stays — Q1 2026 Analysis</h1>
+<div class="subtitle">Reporting period: 1 March 2026 – 31 May 2026 · Source: Boom reservations export · Channel = Owner</div>
+
+<div class="kpi-grid" id="kpis"></div>
+
+<div class="note">
+  <strong>How to read this:</strong> A weekend night = Friday or Saturday occupied by the owner. Holidays counted are SA public holidays in Q1 — Human Rights Day (21 Mar), Good Friday (3 Apr), Easter Sunday (5 Apr), Family Day (6 Apr), Freedom Day (27 Apr), Workers' Day (1 May). Holiday blocks group adjacent dates to capture the full demand window (e.g. the Freedom + Workers' Day stretch runs 25 Apr → 3 May).
+</div>
+
+<h2>Per-listing summary</h2>
+<div class="panel">
+  <button class="copy-btn" onclick="copyTable('summary-table', this)">Copy for Sheets</button>
+  <div class="filter-row">
+    <input type="text" id="summary-filter" placeholder="Filter by listing name…" oninput="filterTable('summary-table', this.value)">
+    <label class="toggle"><input type="checkbox" id="weekend-only" onchange="filterWeekend()"> Hide listings with 0 weekend nights</label>
+  </div>
+  <table id="summary-table">
+    <thead>
+      <tr>
+        <th onclick="sortTable('summary-table', 0, 'str')">Listing</th>
+        <th onclick="sortTable('summary-table', 1, 'num')" class="num">Reservations</th>
+        <th onclick="sortTable('summary-table', 2, 'num')" class="num">Total nights</th>
+        <th onclick="sortTable('summary-table', 3, 'num')" class="num">Weekend nights (Fri/Sat)</th>
+        <th onclick="sortTable('summary-table', 4, 'num')" class="num">Weekend %</th>
+        <th onclick="sortTable('summary-table', 5, 'num')" class="num">Holiday nights</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h2>High-demand holiday blocks</h2>
+
+<div id="blocks"></div>
+
+<h2>Specific weekends</h2>
+
+<h3>Last weekend — Fri 8 May & Sat 9 May 2026</h3>
+<div class="panel">
+  <button class="copy-btn" onclick="copyTable('last-table', this)">Copy for Sheets</button>
+  <div class="block-summary" id="last-summary"></div>
+  <table id="last-table">
+    <thead>
+      <tr>
+        <th>Listing</th>
+        <th>Guest</th>
+        <th class="num">Nights in this weekend</th>
+        <th>Days occupied</th>
+        <th>Reservation check-in</th>
+        <th>Check-out</th>
+        <th class="num">Total res nights</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h3>Upcoming weekend — Fri 15 May & Sat 16 May 2026</h3>
+<div class="panel">
+  <button class="copy-btn" onclick="copyTable('next-table', this)">Copy for Sheets</button>
+  <div class="block-summary" id="next-summary"></div>
+  <table id="next-table">
+    <thead>
+      <tr>
+        <th>Listing</th>
+        <th>Guest</th>
+        <th class="num">Nights in this weekend</th>
+        <th>Days occupied</th>
+        <th>Reservation check-in</th>
+        <th>Check-out</th>
+        <th class="num">Total res nights</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<h2>All owner reservations in Q1</h2>
+<div class="panel">
+  <button class="copy-btn" onclick="copyTable('res-table', this)">Copy for Sheets</button>
+  <div class="filter-row">
+    <input type="text" id="res-filter" placeholder="Filter by listing or guest…" oninput="filterTable('res-table', this.value)">
+  </div>
+  <table id="res-table">
+    <thead>
+      <tr>
+        <th onclick="sortTable('res-table', 0, 'str')">Listing</th>
+        <th onclick="sortTable('res-table', 1, 'str')">Check-in</th>
+        <th onclick="sortTable('res-table', 2, 'str')">Check-out</th>
+        <th onclick="sortTable('res-table', 3, 'num')" class="num">Nights</th>
+        <th onclick="sortTable('res-table', 4, 'num')" class="num">Fri/Sat nights</th>
+        <th>Holidays covered</th>
+        <th>Guest</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+const DATA = {
+  "totals": {
+    "total_nights": 558,
+    "weekend_nights": 198,
+    "holiday_nights": 49,
+    "reservations": 149,
+    "listings": 59,
+    "weekend_pct": 35
+  },
+  "summary": [
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "total_nights": 45,
+      "weekend_nights": 16,
+      "holiday_nights": 5,
+      "stays": 17,
+      "weekend_pct": 36
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "total_nights": 40,
+      "weekend_nights": 20,
+      "holiday_nights": 3,
+      "stays": 15,
+      "weekend_pct": 50
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "total_nights": 26,
+      "weekend_nights": 16,
+      "holiday_nights": 4,
+      "stays": 9,
+      "weekend_pct": 62
+    },
+    {
+      "listing": "25 Thulana Hill, Plettenberg Bay",
+      "total_nights": 26,
+      "weekend_nights": 7,
+      "holiday_nights": 3,
+      "stays": 4,
+      "weekend_pct": 27
+    },
+    {
+      "listing": "Zebula Bush Lodge 127",
+      "total_nights": 25,
+      "weekend_nights": 8,
+      "holiday_nights": 2,
+      "stays": 5,
+      "weekend_pct": 32
+    },
+    {
+      "listing": "Zimbali Hills 8, Zimbali Estate",
+      "total_nights": 21,
+      "weekend_nights": 8,
+      "holiday_nights": 2,
+      "stays": 3,
+      "weekend_pct": 38
+    },
+    {
+      "listing": "Ocean Club A18, Zimbali Lakes",
+      "total_nights": 21,
+      "weekend_nights": 6,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 29
+    },
+    {
+      "listing": "Milkwood Drive 39, Zimbali Estate",
+      "total_nights": 18,
+      "weekend_nights": 5,
+      "holiday_nights": 3,
+      "stays": 2,
+      "weekend_pct": 28
+    },
+    {
+      "listing": "Zebula Bush Lodge 77",
+      "total_nights": 17,
+      "weekend_nights": 6,
+      "holiday_nights": 1,
+      "stays": 4,
+      "weekend_pct": 35
+    },
+    {
+      "listing": "Main House at Zebula 82",
+      "total_nights": 17,
+      "weekend_nights": 3,
+      "holiday_nights": 0,
+      "stays": 3,
+      "weekend_pct": 18
+    },
+    {
+      "listing": "Chalet at Zebula 82",
+      "total_nights": 16,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 12
+    },
+    {
+      "listing": "Driftwood 5, Zimbali Estate",
+      "total_nights": 14,
+      "weekend_nights": 2,
+      "holiday_nights": 1,
+      "stays": 4,
+      "weekend_pct": 14
+    },
+    {
+      "listing": "Cathkin Haven,  Cathkin Estate",
+      "total_nights": 13,
+      "weekend_nights": 6,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 46
+    },
+    {
+      "listing": "Nyathi Hideaway",
+      "total_nights": 13,
+      "weekend_nights": 3,
+      "holiday_nights": 1,
+      "stays": 4,
+      "weekend_pct": 23
+    },
+    {
+      "listing": "Haus Mikaya, Cathkin Estate",
+      "total_nights": 12,
+      "weekend_nights": 5,
+      "holiday_nights": 1,
+      "stays": 3,
+      "weekend_pct": 42
+    },
+    {
+      "listing": "Serenity, Cathkin Estates",
+      "total_nights": 11,
+      "weekend_nights": 6,
+      "holiday_nights": 2,
+      "stays": 4,
+      "weekend_pct": 55
+    },
+    {
+      "listing": "Corals 4, Zimbali Estate",
+      "total_nights": 11,
+      "weekend_nights": 5,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 45
+    },
+    {
+      "listing": "Waterberg House at Zebula (8 adults and 4 kids)",
+      "total_nights": 11,
+      "weekend_nights": 5,
+      "holiday_nights": 0,
+      "stays": 3,
+      "weekend_pct": 45
+    },
+    {
+      "listing": "Elements Bush Villa 295",
+      "total_nights": 11,
+      "weekend_nights": 4,
+      "holiday_nights": 2,
+      "stays": 3,
+      "weekend_pct": 36
+    },
+    {
+      "listing": "La Palma 10A Diaz Beach",
+      "total_nights": 10,
+      "weekend_nights": 3,
+      "holiday_nights": 2,
+      "stays": 1,
+      "weekend_pct": 30
+    },
+    {
+      "listing": "Birdsong Villa Langebaan",
+      "total_nights": 10,
+      "weekend_nights": 2,
+      "holiday_nights": 1,
+      "stays": 3,
+      "weekend_pct": 20
+    },
+    {
+      "listing": "Zimbali Lakes Boulevard Suite 150",
+      "total_nights": 10,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 20
+    },
+    {
+      "listing": "Riverside Rhapsody, Vaal River",
+      "total_nights": 9,
+      "weekend_nights": 6,
+      "holiday_nights": 3,
+      "stays": 3,
+      "weekend_pct": 67
+    },
+    {
+      "listing": "Frantoio Flatlet at 13 Olives Estate",
+      "total_nights": 9,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 3,
+      "weekend_pct": 22
+    },
+    {
+      "listing": "La Ballito 1202, Dolphin Coast",
+      "total_nights": 8,
+      "weekend_nights": 3,
+      "holiday_nights": 1,
+      "stays": 1,
+      "weekend_pct": 38
+    },
+    {
+      "listing": "11 On Fairway Villa, Southbroom",
+      "total_nights": 8,
+      "weekend_nights": 2,
+      "holiday_nights": 1,
+      "stays": 1,
+      "weekend_pct": 25
+    },
+    {
+      "listing": "Luxury Penthouse In The Heart Of Sandton",
+      "total_nights": 8,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 25
+    },
+    {
+      "listing": "Marina Bay 802, Umhlanga",
+      "total_nights": 7,
+      "weekend_nights": 4,
+      "holiday_nights": 3,
+      "stays": 2,
+      "weekend_pct": 57
+    },
+    {
+      "listing": "Aleah, Cathkin Estates",
+      "total_nights": 7,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 29
+    },
+    {
+      "listing": "Ocean Club D4, Zimbali Lakes",
+      "total_nights": 7,
+      "weekend_nights": 2,
+      "holiday_nights": 2,
+      "stays": 1,
+      "weekend_pct": 29
+    },
+    {
+      "listing": "Elements Bush Villa 18",
+      "total_nights": 6,
+      "weekend_nights": 4,
+      "holiday_nights": 1,
+      "stays": 2,
+      "weekend_pct": 67
+    },
+    {
+      "listing": "Surfside C207, Umdloti",
+      "total_nights": 6,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 33
+    },
+    {
+      "listing": "Licorna Beach 41, Umhlanga",
+      "total_nights": 6,
+      "weekend_nights": 1,
+      "holiday_nights": 1,
+      "stays": 1,
+      "weekend_pct": 17
+    },
+    {
+      "listing": "Kalamata Flatlet at 13 Olives Estate",
+      "total_nights": 6,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 3,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Bona Bali 14, Zimbali Estate",
+      "total_nights": 5,
+      "weekend_nights": 3,
+      "holiday_nights": 2,
+      "stays": 2,
+      "weekend_pct": 60
+    },
+    {
+      "listing": "Tuscan Flatlet at 13 Olives Estate",
+      "total_nights": 5,
+      "weekend_nights": 1,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 20
+    },
+    {
+      "listing": "Aloe Corner, Cathkin Estates",
+      "total_nights": 5,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Suite 610, Zimbali Suites",
+      "total_nights": 5,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Baluwatu 10, Zimbali Estate",
+      "total_nights": 4,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 50
+    },
+    {
+      "listing": "Ihlati 3, Zimbali Estate",
+      "total_nights": 4,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 50
+    },
+    {
+      "listing": "Phezulu Villas 2, Zimbali Estate",
+      "total_nights": 4,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 50
+    },
+    {
+      "listing": "Suite 322, Zimbali Suites",
+      "total_nights": 4,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 50
+    },
+    {
+      "listing": "Dierama Dream, Cathkin Estates",
+      "total_nights": 3,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 67
+    },
+    {
+      "listing": "Milkwood Tranquil Beach Cottage",
+      "total_nights": 3,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 67
+    },
+    {
+      "listing": "Oceans Edge 23, Zimbali Estate",
+      "total_nights": 3,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 67
+    },
+    {
+      "listing": "Oceans Edge 3, Zimbali Estate",
+      "total_nights": 3,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 67
+    },
+    {
+      "listing": "Silhouette 3, Margate",
+      "total_nights": 3,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 67
+    },
+    {
+      "listing": "Ocean Club H25, Zimbali Lakes",
+      "total_nights": 3,
+      "weekend_nights": 1,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 33
+    },
+    {
+      "listing": "Sandton Splendour",
+      "total_nights": 3,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Blesbuck Close - Cathkin Estates",
+      "total_nights": 2,
+      "weekend_nights": 2,
+      "holiday_nights": 1,
+      "stays": 1,
+      "weekend_pct": 100
+    },
+    {
+      "listing": "Tiny Tides, Ocean Club C9",
+      "total_nights": 2,
+      "weekend_nights": 2,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 100
+    },
+    {
+      "listing": "Fairways 5, Zimbali Estate",
+      "total_nights": 2,
+      "weekend_nights": 1,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 50
+    },
+    {
+      "listing": "13 Olives, Somerset West",
+      "total_nights": 2,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 2,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Suite 108, Zimbali Suites",
+      "total_nights": 2,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Tranquillity @ 158 Champagne Ridge, Cathkin Estate",
+      "total_nights": 2,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Ocean Club A2, Zimbali Lakes",
+      "total_nights": 1,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Ocean Heights 18, Dolphin Coast",
+      "total_nights": 1,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Sylvan Close 3, Umhlanga Rocks",
+      "total_nights": 1,
+      "weekend_nights": 0,
+      "holiday_nights": 0,
+      "stays": 1,
+      "weekend_pct": 0
+    },
+    {
+      "listing": "Villa Med 5, Dolphin Coast",
+      "total_nights": 1,
+      "weekend_nights": 0,
+      "holiday_nights": 1,
+      "stays": 1,
+      "weekend_pct": 0
+    }
+  ],
+  "blocks": {
+    "Human Rights weekend (20-22 Mar)": [
+      {
+        "listing": "Disa Close 3, Cathkin Estates",
+        "nights": 3,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 20 Mar, Sat 21 Mar, Sun 22 Mar",
+        "guest": "Mohammed Sader"
+      },
+      {
+        "listing": "Zebula Bush Lodge 127",
+        "nights": 3,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 20 Mar, Sat 21 Mar, Sun 22 Mar",
+        "guest": "Bridget  Brammer"
+      },
+      {
+        "listing": "Milkwood Drive 39, Zimbali Estate",
+        "nights": 2,
+        "weekend_nights": 1,
+        "holiday_nights": 1,
+        "dates": "Sat 21 Mar, Sun 22 Mar",
+        "guest": "Jan Isaac"
+      },
+      {
+        "listing": "Blesbuck Close - Cathkin Estates",
+        "nights": 2,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 20 Mar, Sat 21 Mar",
+        "guest": "Bradley Pillay"
+      },
+      {
+        "listing": "Zebula Bush Lodge 77",
+        "nights": 2,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 20 Mar, Sat 21 Mar",
+        "guest": "Modise Moiloanyane"
+      },
+      {
+        "listing": "Perna Perna 20, Umdloti",
+        "nights": 2,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 20 Mar, Sat 21 Mar",
+        "guest": "Sean  Bergset"
+      },
+      {
+        "listing": "Zebula Lodge 118",
+        "nights": 2,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 20 Mar, Sat 21 Mar",
+        "guest": "Modise Moiloanyane"
+      },
+      {
+        "listing": "Nyathi Hideaway",
+        "nights": 1,
+        "weekend_nights": 0,
+        "holiday_nights": 0,
+        "dates": "Sun 22 Mar",
+        "guest": "Mark Zorgs"
+      }
+    ],
+    "Easter long weekend (3-6 Apr)": [
+      {
+        "listing": "25 Thulana Hill, Plettenberg Bay",
+        "nights": 4,
+        "weekend_nights": 2,
+        "holiday_nights": 3,
+        "dates": "Fri 03 Apr, Mon 06 Apr, Sat 04 Apr, Sun 05 Apr",
+        "guest": "Katie Deyzel"
+      },
+      {
+        "listing": "Riverside Rhapsody, Vaal River",
+        "nights": 4,
+        "weekend_nights": 2,
+        "holiday_nights": 3,
+        "dates": "Fri 03 Apr, Mon 06 Apr, Sat 04 Apr, Sun 05 Apr",
+        "guest": "Lesley Riverside Rhapsody"
+      },
+      {
+        "listing": "Marina Bay 802, Umhlanga",
+        "nights": 4,
+        "weekend_nights": 2,
+        "holiday_nights": 3,
+        "dates": "Fri 03 Apr, Mon 06 Apr, Sat 04 Apr, Sun 05 Apr",
+        "guest": "Londiwe Ngwane"
+      },
+      {
+        "listing": "Bona Bali 14, Zimbali Estate",
+        "nights": 3,
+        "weekend_nights": 2,
+        "holiday_nights": 2,
+        "dates": "Fri 03 Apr, Sat 04 Apr, Sun 05 Apr",
+        "guest": "Azwinndini Khampa"
+      },
+      {
+        "listing": "La Palma 10A Diaz Beach",
+        "nights": 3,
+        "weekend_nights": 1,
+        "holiday_nights": 2,
+        "dates": "Mon 06 Apr, Sat 04 Apr, Sun 05 Apr",
+        "guest": "Hugo  Grundling"
+      },
+      {
+        "listing": "Disa Close 3, Cathkin Estates",
+        "nights": 3,
+        "weekend_nights": 2,
+        "holiday_nights": 2,
+        "dates": "Fri 03 Apr, Sat 04 Apr, Sun 05 Apr",
+        "guest": "Mohammed Sader"
+      },
+      {
+        "listing": "Perna Perna 20, Umdloti",
+        "nights": 3,
+        "weekend_nights": 2,
+        "holiday_nights": 2,
+        "dates": "Fri 03 Apr, Sat 04 Apr, Sun 05 Apr",
+        "guest": "Sean  Bergset"
+      },
+      {
+        "listing": "Zebula Lodge 118",
+        "nights": 2,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 03 Apr, Sat 04 Apr",
+        "guest": "Modise Moiloanyane"
+      },
+      {
+        "listing": "Birdsong Villa Langebaan",
+        "nights": 1,
+        "weekend_nights": 0,
+        "holiday_nights": 1,
+        "dates": "Mon 06 Apr",
+        "guest": "Mark Frayne"
+      },
+      {
+        "listing": "Licorna Beach 41, Umhlanga",
+        "nights": 1,
+        "weekend_nights": 1,
+        "holiday_nights": 1,
+        "dates": "Fri 03 Apr",
+        "guest": "Test Test"
+      },
+      {
+        "listing": "Driftwood 5, Zimbali Estate",
+        "nights": 1,
+        "weekend_nights": 0,
+        "holiday_nights": 1,
+        "dates": "Mon 06 Apr",
+        "guest": "Andrea Driftwood 5"
+      },
+      {
+        "listing": "La Ballito 1202, Dolphin Coast",
+        "nights": 1,
+        "weekend_nights": 1,
+        "holiday_nights": 1,
+        "dates": "Fri 03 Apr",
+        "guest": "Test Test"
+      }
+    ],
+    "Freedom + Workers' Day stretch (25 Apr - 3 May)": [
+      {
+        "listing": "Zimbali Hills 8, Zimbali Estate",
+        "nights": 8,
+        "weekend_nights": 3,
+        "holiday_nights": 2,
+        "dates": "Fri 01 May, Mon 27 Apr, Sat 02 May, Sat 25 Apr, Sun 26 Apr, Thu 30 Apr, Tue 28 Apr, Wed 29 Apr",
+        "guest": "Nathi Ngcobo"
+      },
+      {
+        "listing": "Elements Bush Villa 295",
+        "nights": 7,
+        "weekend_nights": 2,
+        "holiday_nights": 2,
+        "dates": "Fri 01 May, Mon 27 Apr, Sat 02 May, Sun 03 May, Thu 30 Apr, Tue 28 Apr, Wed 29 Apr",
+        "guest": "Shaun McCarthy"
+      },
+      {
+        "listing": "Disa Close 3, Cathkin Estates",
+        "nights": 7,
+        "weekend_nights": 3,
+        "holiday_nights": 2,
+        "dates": "Fri 01 May, Mon 27 Apr, Sat 02 May, Sat 25 Apr, Sun 26 Apr, Tue 28 Apr, Wed 29 Apr",
+        "guest": "Mohammed Sader"
+      },
+      {
+        "listing": "Ocean Club D4, Zimbali Lakes",
+        "nights": 7,
+        "weekend_nights": 2,
+        "holiday_nights": 2,
+        "dates": "Fri 01 May, Mon 27 Apr, Sat 25 Apr, Sun 26 Apr, Thu 30 Apr, Tue 28 Apr, Wed 29 Apr",
+        "guest": "Zunaid Rasdien"
+      },
+      {
+        "listing": "Milkwood Drive 39, Zimbali Estate",
+        "nights": 7,
+        "weekend_nights": 2,
+        "holiday_nights": 2,
+        "dates": "Fri 01 May, Mon 27 Apr, Sat 25 Apr, Sun 26 Apr, Thu 30 Apr, Tue 28 Apr, Wed 29 Apr",
+        "guest": "Jan Isaac"
+      },
+      {
+        "listing": "Zebula Bush Lodge 127",
+        "nights": 6,
+        "weekend_nights": 1,
+        "holiday_nights": 1,
+        "dates": "Mon 27 Apr, Sat 25 Apr, Sun 26 Apr, Thu 30 Apr, Tue 28 Apr, Wed 29 Apr",
+        "guest": "Stacy Henning"
+      },
+      {
+        "listing": "Serenity, Cathkin Estates",
+        "nights": 6,
+        "weekend_nights": 3,
+        "holiday_nights": 2,
+        "dates": "Fri 01 May, Mon 27 Apr, Sat 02 May, Sat 25 Apr, Sun 26 Apr, Thu 30 Apr",
+        "guest": "Jay Weeks"
+      },
+      {
+        "listing": "Perna Perna 20, Umdloti",
+        "nights": 5,
+        "weekend_nights": 3,
+        "holiday_nights": 1,
+        "dates": "Fri 01 May, Sat 02 May, Sat 25 Apr, Sun 03 May, Sun 26 Apr",
+        "guest": "Sean  Bergset"
+      },
+      {
+        "listing": "11 On Fairway Villa, Southbroom",
+        "nights": 5,
+        "weekend_nights": 1,
+        "holiday_nights": 1,
+        "dates": "Mon 27 Apr, Sat 25 Apr, Sun 26 Apr, Tue 28 Apr, Wed 29 Apr",
+        "guest": "Nondyebo Dzingwa"
+      },
+      {
+        "listing": "Haus Mikaya, Cathkin Estate",
+        "nights": 5,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 01 May, Sat 02 May, Sun 03 May, Thu 30 Apr, Wed 29 Apr",
+        "guest": "Rainer Talanda"
+      },
+      {
+        "listing": "Zebula Lodge 118",
+        "nights": 4,
+        "weekend_nights": 3,
+        "holiday_nights": 1,
+        "dates": "Fri 01 May, Sat 02 May, Sat 25 Apr, Thu 30 Apr",
+        "guest": "Modise Moiloanyane"
+      },
+      {
+        "listing": "Nyathi Hideaway",
+        "nights": 3,
+        "weekend_nights": 1,
+        "holiday_nights": 1,
+        "dates": "Mon 27 Apr, Sat 25 Apr, Sun 26 Apr",
+        "guest": "Mark Zorgs"
+      },
+      {
+        "listing": "Elements Bush Villa 18",
+        "nights": 3,
+        "weekend_nights": 2,
+        "holiday_nights": 1,
+        "dates": "Fri 01 May, Sat 02 May, Sun 03 May",
+        "guest": "Gary Glenn"
+      },
+      {
+        "listing": "Cathkin Haven,  Cathkin Estate",
+        "nights": 2,
+        "weekend_nights": 1,
+        "holiday_nights": 0,
+        "dates": "Sat 25 Apr, Sun 26 Apr",
+        "guest": "Phumzile Ndlala"
+      },
+      {
+        "listing": "Silhouette 3, Margate",
+        "nights": 2,
+        "weekend_nights": 1,
+        "holiday_nights": 0,
+        "dates": "Sat 25 Apr, Sun 26 Apr",
+        "guest": "Dean Naidoo"
+      },
+      {
+        "listing": "Waterberg House at Zebula (8 adults and 4 kids)",
+        "nights": 2,
+        "weekend_nights": 1,
+        "holiday_nights": 0,
+        "dates": "Sat 25 Apr, Sun 26 Apr",
+        "guest": "DERRI PHILPS"
+      },
+      {
+        "listing": "Villa Med 5, Dolphin Coast",
+        "nights": 1,
+        "weekend_nights": 0,
+        "holiday_nights": 1,
+        "dates": "Mon 27 Apr",
+        "guest": "Linda Oosthuizen"
+      },
+      {
+        "listing": "Surfside C207, Umdloti",
+        "nights": 1,
+        "weekend_nights": 0,
+        "holiday_nights": 0,
+        "dates": "Wed 29 Apr",
+        "guest": "Greg Schroder"
+      },
+      {
+        "listing": "Sylvan Close 3, Umhlanga Rocks",
+        "nights": 1,
+        "weekend_nights": 0,
+        "holiday_nights": 0,
+        "dates": "Sun 03 May",
+        "guest": "Gill Curling"
+      }
+    ]
+  },
+  "last_wknd": [
+    {
+      "listing": "Baluwatu 10, Zimbali Estate",
+      "check_in": "2026-05-07",
+      "check_out": "2026-05-10",
+      "res_nights": 3,
+      "guest_name": "Thato Moabi",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Birdsong Villa Langebaan",
+      "check_in": "2026-05-04",
+      "check_out": "2026-05-10",
+      "res_nights": 6,
+      "guest_name": "Mark Frayne",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-10",
+      "res_nights": 2,
+      "guest_name": "Mohammed Sader",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-10",
+      "res_nights": 2,
+      "guest_name": "Modise Moiloanyane",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Ocean Club A18, Zimbali Lakes",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-29",
+      "res_nights": 21,
+      "guest_name": "Bongeka Buthelezi",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-10",
+      "res_nights": 2,
+      "guest_name": "Sean  Bergset",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Oceans Edge 3, Zimbali Estate",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-11",
+      "res_nights": 3,
+      "guest_name": "Ebrahim Paruk",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "25 Thulana Hill, Plettenberg Bay",
+      "check_in": "2026-05-09",
+      "check_out": "2026-05-16",
+      "res_nights": 7,
+      "guest_name": "Katie Deyzel",
+      "nights_in_wknd": 1,
+      "days": "Sat"
+    },
+    {
+      "listing": "Bona Bali 14, Zimbali Estate",
+      "check_in": "2026-05-09",
+      "check_out": "2026-05-10",
+      "res_nights": 1,
+      "guest_name": "Azwinndini Khampha",
+      "nights_in_wknd": 1,
+      "days": "Sat"
+    },
+    {
+      "listing": "Ocean Club H25, Zimbali Lakes",
+      "check_in": "2026-05-06",
+      "check_out": "2026-05-09",
+      "res_nights": 3,
+      "guest_name": "Taslynne Gallagher",
+      "nights_in_wknd": 1,
+      "days": "Fri"
+    },
+    {
+      "listing": "Suite 322, Zimbali Suites",
+      "check_in": "2026-05-09",
+      "check_out": "2026-05-11",
+      "res_nights": 2,
+      "guest_name": "Lufefe  Mayekiso",
+      "nights_in_wknd": 1,
+      "days": "Sat"
+    }
+  ],
+  "next_wknd": [
+    {
+      "listing": "Corals 4, Zimbali Estate",
+      "check_in": "2026-05-15",
+      "check_out": "2026-05-23",
+      "res_nights": 8,
+      "guest_name": "Phiwe  Mhlauli",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-15",
+      "check_out": "2026-05-17",
+      "res_nights": 2,
+      "guest_name": "Mohammed Sader",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Elements Bush Villa 18",
+      "check_in": "2026-05-14",
+      "check_out": "2026-05-17",
+      "res_nights": 3,
+      "guest_name": "McLaren Gary",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Frantoio Flatlet at 13 Olives Estate",
+      "check_in": "2026-05-12",
+      "check_out": "2026-05-19",
+      "res_nights": 7,
+      "guest_name": "Jane Tsepouras",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Phezulu Villas 2, Zimbali Estate",
+      "check_in": "2026-05-14",
+      "check_out": "2026-05-18",
+      "res_nights": 4,
+      "guest_name": "Thandiwe Legwaila",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Ocean Club A18, Zimbali Lakes",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-29",
+      "res_nights": 21,
+      "guest_name": "Bongeka Buthelezi",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-05-15",
+      "check_out": "2026-05-17",
+      "res_nights": 2,
+      "guest_name": "Modise Moiloanyane",
+      "nights_in_wknd": 2,
+      "days": "Fri+Sat"
+    },
+    {
+      "listing": "25 Thulana Hill, Plettenberg Bay",
+      "check_in": "2026-05-09",
+      "check_out": "2026-05-16",
+      "res_nights": 7,
+      "guest_name": "Katie Deyzel",
+      "nights_in_wknd": 1,
+      "days": "Fri"
+    }
+  ],
+  "reservations": [
+    {
+      "listing": "Main House at Zebula 82",
+      "check_in": "2026-03-01",
+      "check_out": "2026-03-13",
+      "nights": 12,
+      "guest": "Christo Zebula 82",
+      "code": "9hvjyu94X2",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Bush Lodge 77",
+      "check_in": "2026-03-01",
+      "check_out": "2026-03-13",
+      "nights": 12,
+      "guest": "Modise Moiloanyane",
+      "code": "rIv26bQxhG",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Chalet at Zebula 82",
+      "check_in": "2026-03-01",
+      "check_out": "2026-03-13",
+      "nights": 12,
+      "guest": "Christo Zebula 82",
+      "code": "DpnpyjrfcR",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Bush Lodge 127",
+      "check_in": "2026-03-01",
+      "check_out": "2026-03-13",
+      "nights": 12,
+      "guest": "Nicky Zebula",
+      "code": "v5rlCja0pi",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-03-01",
+      "check_out": "2026-03-06",
+      "nights": 5,
+      "guest": "Modise Moiloanyane",
+      "code": "lHFOw6nkSG",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Zimbali Lakes Boulevard Suite 150",
+      "check_in": "2026-03-02",
+      "check_out": "2026-03-05",
+      "nights": 3,
+      "guest": "Sanele Majikija",
+      "code": "thQ6Al4lIJ",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Aloe Corner, Cathkin Estates",
+      "check_in": "2026-03-02",
+      "check_out": "2026-03-05",
+      "nights": 3,
+      "guest": "Desiree du Toit",
+      "code": "ARr2VXUVy1",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Luxury Penthouse In The Heart Of Sandton",
+      "check_in": "2026-03-03",
+      "check_out": "2026-03-09",
+      "nights": 6,
+      "guest": "Judy Ntuli",
+      "code": "oTBIYdyF8B",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zimbali Hills 8, Zimbali Estate",
+      "check_in": "2026-03-05",
+      "check_out": "2026-03-09",
+      "nights": 4,
+      "guest": "Nathi Ngcobo",
+      "code": "37j3M4Udi2",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Dierama Dream, Cathkin Estates",
+      "check_in": "2026-03-06",
+      "check_out": "2026-03-09",
+      "nights": 3,
+      "guest": "Pamela Daniel",
+      "code": "IRWjzf0uM6",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-03-06",
+      "check_out": "2026-03-08",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "LXKyxLlX1V",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-03-07",
+      "check_out": "2026-03-09",
+      "nights": 2,
+      "guest": "Sean  Bergset",
+      "code": "zQyQUXjAfK",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Zimbali Lakes Boulevard Suite 150",
+      "check_in": "2026-03-08",
+      "check_out": "2026-03-15",
+      "nights": 7,
+      "guest": "Sanele Majikija",
+      "code": "pc5s7Vns0r",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-03-08",
+      "check_out": "2026-03-13",
+      "nights": 5,
+      "guest": "Modise Moiloanyane",
+      "code": "bj7K65PFCl",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Elements Bush Villa 295",
+      "check_in": "2026-03-10",
+      "check_out": "2026-03-12",
+      "nights": 2,
+      "guest": "Shaun McCarthy",
+      "code": "JsyZ8K5bF5",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Surfside C207, Umdloti",
+      "check_in": "2026-03-11",
+      "check_out": "2026-03-16",
+      "nights": 5,
+      "guest": "Greg Schroder",
+      "code": "vXUqchg06Y",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-03-11",
+      "check_out": "2026-03-13",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "HTxkl12EFe",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Oceans Edge 23, Zimbali Estate",
+      "check_in": "2026-03-12",
+      "check_out": "2026-03-15",
+      "nights": 3,
+      "guest": "Sobeng Ntlokosi",
+      "code": "yWkgA6ByrV",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-03-13",
+      "check_out": "2026-03-14",
+      "nights": 1,
+      "guest": "Sean  Bergset",
+      "code": "6p4Uvhrzie",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Bush Lodge 77",
+      "check_in": "2026-03-13",
+      "check_out": "2026-03-15",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "OX0rXMT0xj",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-03-13",
+      "check_out": "2026-03-15",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "xBU6lQBi3h",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Corals 4, Zimbali Estate",
+      "check_in": "2026-03-13",
+      "check_out": "2026-03-16",
+      "nights": 3,
+      "guest": "Phiwe Mhlauli",
+      "code": "Pc1DeUdNiC",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Main House at Zebula 82",
+      "check_in": "2026-03-14",
+      "check_out": "2026-03-15",
+      "nights": 1,
+      "guest": "Christo Zebula 82",
+      "code": "nrSmRevbl0",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-03-14",
+      "check_out": "2026-03-15",
+      "nights": 1,
+      "guest": "Sean  Bergset",
+      "code": "flXqCtym8H",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Ocean Heights 18, Dolphin Coast",
+      "check_in": "2026-03-15",
+      "check_out": "2026-03-16",
+      "nights": 1,
+      "guest": "Devarasi Bellengere",
+      "code": "JvFQaHMkGj",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Driftwood 5, Zimbali Estate",
+      "check_in": "2026-03-16",
+      "check_out": "2026-03-20",
+      "nights": 4,
+      "guest": "Andrea Driftwood 5",
+      "code": "OXYxLwO7IV",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Chalet at Zebula 82",
+      "check_in": "2026-03-16",
+      "check_out": "2026-03-20",
+      "nights": 4,
+      "guest": "Christo Zebula 82",
+      "code": "DHG5ZZYbK8",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Bush Lodge 127",
+      "check_in": "2026-03-19",
+      "check_out": "2026-03-23",
+      "nights": 4,
+      "guest": "Bridget  Brammer",
+      "code": "Lr3sGsZgUj",
+      "fri_sat": 2,
+      "holidays": "Human Rights Day"
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-03-20",
+      "check_out": "2026-03-22",
+      "nights": 2,
+      "guest": "Sean  Bergset",
+      "code": "yRvfOSCZMI",
+      "fri_sat": 2,
+      "holidays": "Human Rights Day"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-03-20",
+      "check_out": "2026-03-23",
+      "nights": 3,
+      "guest": "Mohammed Sader",
+      "code": "MO8hv5k5yo",
+      "fri_sat": 2,
+      "holidays": "Human Rights Day"
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-03-20",
+      "check_out": "2026-03-22",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "Ol9goxH4tc",
+      "fri_sat": 2,
+      "holidays": "Human Rights Day"
+    },
+    {
+      "listing": "Blesbuck Close - Cathkin Estates",
+      "check_in": "2026-03-20",
+      "check_out": "2026-03-22",
+      "nights": 2,
+      "guest": "Bradley Pillay",
+      "code": "JKVAYTL8lL",
+      "fri_sat": 2,
+      "holidays": "Human Rights Day"
+    },
+    {
+      "listing": "Zebula Bush Lodge 77",
+      "check_in": "2026-03-20",
+      "check_out": "2026-03-22",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "DKUDNaFkgP",
+      "fri_sat": 2,
+      "holidays": "Human Rights Day"
+    },
+    {
+      "listing": "Milkwood Drive 39, Zimbali Estate",
+      "check_in": "2026-03-21",
+      "check_out": "2026-04-01",
+      "nights": 11,
+      "guest": "Jan Isaac",
+      "code": "KNv98BEJtj",
+      "fri_sat": 3,
+      "holidays": "Human Rights Day"
+    },
+    {
+      "listing": "Nyathi Hideaway",
+      "check_in": "2026-03-22",
+      "check_out": "2026-03-25",
+      "nights": 3,
+      "guest": "Mark Zorgs",
+      "code": "PmymKAcGyT",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "13 Olives, Somerset West",
+      "check_in": "2026-03-23",
+      "check_out": "2026-03-24",
+      "nights": 1,
+      "guest": "Jane Tsepouras",
+      "code": "D0rqGgxZsP",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-03-23",
+      "check_out": "2026-03-27",
+      "nights": 4,
+      "guest": "Mohammed Sader",
+      "code": "PKlGcO59YO",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Bush Lodge 77",
+      "check_in": "2026-03-25",
+      "check_out": "2026-03-26",
+      "nights": 1,
+      "guest": "Modise Moiloanyane",
+      "code": "ieg9R929tV",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-03-25",
+      "check_out": "2026-03-26",
+      "nights": 1,
+      "guest": "Modise Moiloanyane",
+      "code": "GMXrVZj4CQ",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Ocean Club A2, Zimbali Lakes",
+      "check_in": "2026-03-26",
+      "check_out": "2026-03-27",
+      "nights": 1,
+      "guest": "Chantal Rijke",
+      "code": "oxI6eyVLCk",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Zimbali Hills 8, Zimbali Estate",
+      "check_in": "2026-03-26",
+      "check_out": "2026-03-30",
+      "nights": 4,
+      "guest": "Nathi Ngcobo",
+      "code": "XzgFapwGkx",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Bush Lodge 127",
+      "check_in": "2026-03-27",
+      "check_out": "2026-03-29",
+      "nights": 2,
+      "guest": "Test Test",
+      "code": "ymq3U01tDn",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Riverside Rhapsody, Vaal River",
+      "check_in": "2026-03-27",
+      "check_out": "2026-03-29",
+      "nights": 2,
+      "guest": "Lesley Riverside Rhapsody",
+      "code": "HanrrVe7P2",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Marina Bay 802, Umhlanga",
+      "check_in": "2026-03-27",
+      "check_out": "2026-03-29",
+      "nights": 2,
+      "guest": "Londiwe Ngwane",
+      "code": "ZjlKqLrrOu",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-03-27",
+      "check_out": "2026-03-30",
+      "nights": 3,
+      "guest": "Modise Moiloanyane",
+      "code": "nuanbVvWhV",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "La Ballito 1202, Dolphin Coast",
+      "check_in": "2026-03-27",
+      "check_out": "2026-04-04",
+      "nights": 8,
+      "guest": "Test Test",
+      "code": "cFLHtyHRwr",
+      "fri_sat": 3,
+      "holidays": "Good Friday"
+    },
+    {
+      "listing": "Waterberg House at Zebula (8 adults and 4 kids)",
+      "check_in": "2026-03-28",
+      "check_out": "2026-04-01",
+      "nights": 4,
+      "guest": "DERRI PHILPS",
+      "code": "yPhHd8SXKt",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-03-28",
+      "check_out": "2026-03-31",
+      "nights": 3,
+      "guest": "Mohammed Sader",
+      "code": "USPKr6XRoJ",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Haus Mikaya, Cathkin Estate",
+      "check_in": "2026-03-28",
+      "check_out": "2026-04-01",
+      "nights": 4,
+      "guest": "Rainer Talanda",
+      "code": "IELjMSCUYw",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-03-28",
+      "check_out": "2026-04-06",
+      "nights": 9,
+      "guest": "Sean  Bergset",
+      "code": "CfKsQxwXRu",
+      "fri_sat": 3,
+      "holidays": "Good Friday, Easter Sunday"
+    },
+    {
+      "listing": "Aloe Corner, Cathkin Estates",
+      "check_in": "2026-03-29",
+      "check_out": "2026-03-31",
+      "nights": 2,
+      "guest": "Desiree du Toit",
+      "code": "m7FKSqa8ZH",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "25 Thulana Hill, Plettenberg Bay",
+      "check_in": "2026-03-29",
+      "check_out": "2026-04-05",
+      "nights": 7,
+      "guest": "Katie Deyzel",
+      "code": "dOmsWSwa5I",
+      "fri_sat": 2,
+      "holidays": "Good Friday"
+    },
+    {
+      "listing": "Licorna Beach 41, Umhlanga",
+      "check_in": "2026-03-29",
+      "check_out": "2026-04-04",
+      "nights": 6,
+      "guest": "Test Test",
+      "code": "kb2c0CG2cr",
+      "fri_sat": 1,
+      "holidays": "Good Friday"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-04-01",
+      "check_out": "2026-04-03",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "yVSbstcYOd",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Kalamata Flatlet at 13 Olives Estate",
+      "check_in": "2026-04-01",
+      "check_out": "2026-04-02",
+      "nights": 1,
+      "guest": "Jane Tsepouras",
+      "code": "OIajTIOJem",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Frantoio Flatlet at 13 Olives Estate",
+      "check_in": "2026-04-01",
+      "check_out": "2026-04-02",
+      "nights": 1,
+      "guest": "Jane Tsepouras",
+      "code": "yii70VmD8o",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Tranquillity @ 158 Champagne Ridge, Cathkin Estate",
+      "check_in": "2026-04-01",
+      "check_out": "2026-04-03",
+      "nights": 2,
+      "guest": "Dees Mohan",
+      "code": "Jkm2vQMLe1",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Marina Bay 802, Umhlanga",
+      "check_in": "2026-04-02",
+      "check_out": "2026-04-07",
+      "nights": 5,
+      "guest": "Londiwe Ngwane",
+      "code": "ZkUzGuJ43g",
+      "fri_sat": 2,
+      "holidays": "Good Friday, Easter Sunday, Family Day"
+    },
+    {
+      "listing": "Bona Bali 14, Zimbali Estate",
+      "check_in": "2026-04-02",
+      "check_out": "2026-04-06",
+      "nights": 4,
+      "guest": "Azwinndini Khampa",
+      "code": "5ukEYc62Lw",
+      "fri_sat": 2,
+      "holidays": "Good Friday, Easter Sunday"
+    },
+    {
+      "listing": "Riverside Rhapsody, Vaal River",
+      "check_in": "2026-04-02",
+      "check_out": "2026-04-07",
+      "nights": 5,
+      "guest": "Lesley Riverside Rhapsody",
+      "code": "xfZqZanVMC",
+      "fri_sat": 2,
+      "holidays": "Good Friday, Easter Sunday, Family Day"
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-04-03",
+      "check_out": "2026-04-05",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "7jVJ4oBXo2",
+      "fri_sat": 2,
+      "holidays": "Good Friday"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-04-03",
+      "check_out": "2026-04-06",
+      "nights": 3,
+      "guest": "Mohammed Sader",
+      "code": "UthkUwNqls",
+      "fri_sat": 2,
+      "holidays": "Good Friday, Easter Sunday"
+    },
+    {
+      "listing": "La Palma 10A Diaz Beach",
+      "check_in": "2026-04-04",
+      "check_out": "2026-04-14",
+      "nights": 10,
+      "guest": "Hugo  Grundling",
+      "code": "1r672tYItf",
+      "fri_sat": 3,
+      "holidays": "Easter Sunday, Family Day"
+    },
+    {
+      "listing": "25 Thulana Hill, Plettenberg Bay",
+      "check_in": "2026-04-05",
+      "check_out": "2026-04-11",
+      "nights": 6,
+      "guest": "Katie Deyzel",
+      "code": "gi2gFN9RtM",
+      "fri_sat": 1,
+      "holidays": "Easter Sunday, Family Day"
+    },
+    {
+      "listing": "Birdsong Villa Langebaan",
+      "check_in": "2026-04-06",
+      "check_out": "2026-04-07",
+      "nights": 1,
+      "guest": "Mark Frayne",
+      "code": "9zngDrpEx3",
+      "fri_sat": 0,
+      "holidays": "Family Day"
+    },
+    {
+      "listing": "Driftwood 5, Zimbali Estate",
+      "check_in": "2026-04-06",
+      "check_out": "2026-04-07",
+      "nights": 1,
+      "guest": "Andrea Driftwood 5",
+      "code": "FauaDWJiqv",
+      "fri_sat": 0,
+      "holidays": "Family Day"
+    },
+    {
+      "listing": "Birdsong Villa Langebaan",
+      "check_in": "2026-04-07",
+      "check_out": "2026-04-10",
+      "nights": 3,
+      "guest": "Mark Frayne",
+      "code": "FAKWP60X4z",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Frantoio Flatlet at 13 Olives Estate",
+      "check_in": "2026-04-08",
+      "check_out": "2026-04-09",
+      "nights": 1,
+      "guest": "Jane Tsepouras",
+      "code": "9vZx6oebNu",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Kalamata Flatlet at 13 Olives Estate",
+      "check_in": "2026-04-08",
+      "check_out": "2026-04-09",
+      "nights": 1,
+      "guest": "Jane Tsepouras",
+      "code": "jCtnsfmTsL",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-04-10",
+      "check_out": "2026-04-12",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "cV5lPsMww4",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-04-11",
+      "check_out": "2026-04-13",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "j4DtgzYYpp",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Sandton Splendour",
+      "check_in": "2026-04-12",
+      "check_out": "2026-04-14",
+      "nights": 2,
+      "guest": "Arno de Beer",
+      "code": "54R2RGjGJM",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-04-13",
+      "check_out": "2026-04-15",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "MEB9g5GcVG",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Driftwood 5, Zimbali Estate",
+      "check_in": "2026-04-13",
+      "check_out": "2026-04-19",
+      "nights": 6,
+      "guest": "Andrea Driftwood 5",
+      "code": "Lz9yAE3hml",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Nyathi Hideaway",
+      "check_in": "2026-04-13",
+      "check_out": "2026-04-18",
+      "nights": 5,
+      "guest": "Mark Zorgs",
+      "code": "9z87m4AE7Y",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "25 Thulana Hill, Plettenberg Bay",
+      "check_in": "2026-04-14",
+      "check_out": "2026-04-20",
+      "nights": 6,
+      "guest": "Katie Deyzel",
+      "code": "pekhQxqvf3",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Baluwatu 10, Zimbali Estate",
+      "check_in": "2026-04-15",
+      "check_out": "2026-04-16",
+      "nights": 1,
+      "guest": "Minah Moabi",
+      "code": "DgWBhdlf7B",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Fairways 5, Zimbali Estate",
+      "check_in": "2026-04-16",
+      "check_out": "2026-04-18",
+      "nights": 2,
+      "guest": "Daniella Tem Tem",
+      "code": "cNIJbEgrxw",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Suite 322, Zimbali Suites",
+      "check_in": "2026-04-16",
+      "check_out": "2026-04-18",
+      "nights": 2,
+      "guest": "Lufefe  Mayekiso",
+      "code": "Mj6lCzbVLD",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Waterberg House at Zebula (8 adults and 4 kids)",
+      "check_in": "2026-04-17",
+      "check_out": "2026-04-21",
+      "nights": 4,
+      "guest": "Nondyebo HO",
+      "code": "ZOACyto2Jt",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Haus Mikaya, Cathkin Estate",
+      "check_in": "2026-04-17",
+      "check_out": "2026-04-19",
+      "nights": 2,
+      "guest": "Rainer Talanda",
+      "code": "75vkSqDYjH",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-04-17",
+      "check_out": "2026-04-19",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "GPufOxAgyS",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Milkwood Tranquil Beach Cottage",
+      "check_in": "2026-04-17",
+      "check_out": "2026-04-20",
+      "nights": 3,
+      "guest": "Ingrid Homeowner",
+      "code": "hY5nYxRP8D",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zimbali Hills 8, Zimbali Estate",
+      "check_in": "2026-04-20",
+      "check_out": "2026-05-03",
+      "nights": 13,
+      "guest": "Nathi Ngcobo",
+      "code": "jLICIQOjhG",
+      "fri_sat": 4,
+      "holidays": "Freedom Day, Workers' Day"
+    },
+    {
+      "listing": "Kalamata Flatlet at 13 Olives Estate",
+      "check_in": "2026-04-20",
+      "check_out": "2026-04-24",
+      "nights": 4,
+      "guest": "Jane Tsepouras",
+      "code": "Ts5ICsDyrb",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Sandton Splendour",
+      "check_in": "2026-04-20",
+      "check_out": "2026-04-21",
+      "nights": 1,
+      "guest": "Zaz Test",
+      "code": "ZS6egKEyHs",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Tuscan Flatlet at 13 Olives Estate",
+      "check_in": "2026-04-20",
+      "check_out": "2026-04-25",
+      "nights": 5,
+      "guest": "Jane Tsepouras",
+      "code": "aW0gZivelm",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Luxury Penthouse In The Heart Of Sandton",
+      "check_in": "2026-04-22",
+      "check_out": "2026-04-24",
+      "nights": 2,
+      "guest": "Khaya Ntuli",
+      "code": "83asQaGZhJ",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "11 On Fairway Villa, Southbroom",
+      "check_in": "2026-04-22",
+      "check_out": "2026-04-30",
+      "nights": 8,
+      "guest": "Nondyebo Dzingwa",
+      "code": "4oVxuefGIc",
+      "fri_sat": 2,
+      "holidays": "Freedom Day"
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-04-23",
+      "check_out": "2026-04-27",
+      "nights": 4,
+      "guest": "Sean  Bergset",
+      "code": "p7CiWTvRYJ",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Cathkin Haven,  Cathkin Estate",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-27",
+      "nights": 3,
+      "guest": "Phumzile Ndlala",
+      "code": "G0egS03dVN",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Bush Lodge 127",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-27",
+      "nights": 3,
+      "guest": "Stacy Henning",
+      "code": "w3pz5Fy4uA",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-27",
+      "nights": 3,
+      "guest": "Mohammed Sader",
+      "code": "o9tPWv6UiA",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-26",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "4ikeh85ImV",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Nyathi Hideaway",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-28",
+      "nights": 4,
+      "guest": "Mark Zorgs",
+      "code": "gLUvi3AjZY",
+      "fri_sat": 2,
+      "holidays": "Freedom Day"
+    },
+    {
+      "listing": "Silhouette 3, Margate",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-27",
+      "nights": 3,
+      "guest": "Dean Naidoo",
+      "code": "yeG6YuFiYn",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Waterberg House at Zebula (8 adults and 4 kids)",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-27",
+      "nights": 3,
+      "guest": "DERRI PHILPS",
+      "code": "8uoLAiDdLf",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Serenity, Cathkin Estates",
+      "check_in": "2026-04-24",
+      "check_out": "2026-04-28",
+      "nights": 4,
+      "guest": "Jay Weeks",
+      "code": "f5sO1goLHr",
+      "fri_sat": 2,
+      "holidays": "Freedom Day"
+    },
+    {
+      "listing": "Ocean Club D4, Zimbali Lakes",
+      "check_in": "2026-04-25",
+      "check_out": "2026-05-02",
+      "nights": 7,
+      "guest": "Zunaid Rasdien",
+      "code": "4lBw8pV1pG",
+      "fri_sat": 2,
+      "holidays": "Freedom Day, Workers' Day"
+    },
+    {
+      "listing": "Milkwood Drive 39, Zimbali Estate",
+      "check_in": "2026-04-25",
+      "check_out": "2026-05-02",
+      "nights": 7,
+      "guest": "Jan Isaac",
+      "code": "zgTHYQqbYy",
+      "fri_sat": 2,
+      "holidays": "Freedom Day, Workers' Day"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-04-27",
+      "check_out": "2026-04-28",
+      "nights": 1,
+      "guest": "Mohammed Sader",
+      "code": "79Z5aoQk5p",
+      "fri_sat": 0,
+      "holidays": "Freedom Day"
+    },
+    {
+      "listing": "Zebula Bush Lodge 127",
+      "check_in": "2026-04-27",
+      "check_out": "2026-05-01",
+      "nights": 4,
+      "guest": "Test Test",
+      "code": "z8LyruyaXj",
+      "fri_sat": 0,
+      "holidays": "Freedom Day"
+    },
+    {
+      "listing": "Villa Med 5, Dolphin Coast",
+      "check_in": "2026-04-27",
+      "check_out": "2026-04-28",
+      "nights": 1,
+      "guest": "Linda Oosthuizen",
+      "code": "Np7Zktj74O",
+      "fri_sat": 0,
+      "holidays": "Freedom Day"
+    },
+    {
+      "listing": "Elements Bush Villa 295",
+      "check_in": "2026-04-27",
+      "check_out": "2026-05-04",
+      "nights": 7,
+      "guest": "Shaun McCarthy",
+      "code": "bLM2XhOCV8",
+      "fri_sat": 2,
+      "holidays": "Freedom Day, Workers' Day"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-04-28",
+      "check_out": "2026-04-30",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "9sHlakTElz",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Surfside C207, Umdloti",
+      "check_in": "2026-04-29",
+      "check_out": "2026-04-30",
+      "nights": 1,
+      "guest": "Greg Schroder",
+      "code": "GyDxya6ili",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Haus Mikaya, Cathkin Estate",
+      "check_in": "2026-04-29",
+      "check_out": "2026-05-05",
+      "nights": 6,
+      "guest": "Rainer Talanda",
+      "code": "WczwLo35vw",
+      "fri_sat": 2,
+      "holidays": "Workers' Day"
+    },
+    {
+      "listing": "Serenity, Cathkin Estates",
+      "check_in": "2026-04-30",
+      "check_out": "2026-05-03",
+      "nights": 3,
+      "guest": "Jay Weeks",
+      "code": "K0SmHqq6OQ",
+      "fri_sat": 2,
+      "holidays": "Workers' Day"
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-04-30",
+      "check_out": "2026-05-03",
+      "nights": 3,
+      "guest": "Modise Moiloanyane",
+      "code": "ZeJG2Tq1yX",
+      "fri_sat": 2,
+      "holidays": "Workers' Day"
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-01",
+      "check_out": "2026-05-03",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "EmDZlKcyJL",
+      "fri_sat": 2,
+      "holidays": "Workers' Day"
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-05-01",
+      "check_out": "2026-05-04",
+      "nights": 3,
+      "guest": "Sean  Bergset",
+      "code": "ahsoOtHUeP",
+      "fri_sat": 2,
+      "holidays": "Workers' Day"
+    },
+    {
+      "listing": "Elements Bush Villa 18",
+      "check_in": "2026-05-01",
+      "check_out": "2026-05-04",
+      "nights": 3,
+      "guest": "Gary Glenn",
+      "code": "b5O6rDMbpK",
+      "fri_sat": 2,
+      "holidays": "Workers' Day"
+    },
+    {
+      "listing": "Sylvan Close 3, Umhlanga Rocks",
+      "check_in": "2026-05-03",
+      "check_out": "2026-05-04",
+      "nights": 1,
+      "guest": "Gill Curling",
+      "code": "S977lookWC",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-04",
+      "check_out": "2026-05-08",
+      "nights": 4,
+      "guest": "Mohammed Sader",
+      "code": "FFxXmUexnX",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Birdsong Villa Langebaan",
+      "check_in": "2026-05-04",
+      "check_out": "2026-05-10",
+      "nights": 6,
+      "guest": "Mark Frayne",
+      "code": "AOSDbZ31Tj",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Ocean Club H25, Zimbali Lakes",
+      "check_in": "2026-05-06",
+      "check_out": "2026-05-09",
+      "nights": 3,
+      "guest": "Taslynne Gallagher",
+      "code": "9VWR30kO9L",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Nyathi Hideaway",
+      "check_in": "2026-05-07",
+      "check_out": "2026-05-08",
+      "nights": 1,
+      "guest": "Mark Zorgs",
+      "code": "TrezCw6aZf",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Baluwatu 10, Zimbali Estate",
+      "check_in": "2026-05-07",
+      "check_out": "2026-05-10",
+      "nights": 3,
+      "guest": "Thato Moabi",
+      "code": "ksdCxF6zUA",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-10",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "reWnVTKWnY",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-10",
+      "nights": 2,
+      "guest": "Sean  Bergset",
+      "code": "z1w3domWAQ",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Ocean Club A18, Zimbali Lakes",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-29",
+      "nights": 21,
+      "guest": "Bongeka Buthelezi",
+      "code": "KMSULqefqV",
+      "fri_sat": 6,
+      "holidays": ""
+    },
+    {
+      "listing": "Oceans Edge 3, Zimbali Estate",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-11",
+      "nights": 3,
+      "guest": "Ebrahim Paruk",
+      "code": "vhRew5QgIu",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-08",
+      "check_out": "2026-05-10",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "GjdQHGDoc0",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Bona Bali 14, Zimbali Estate",
+      "check_in": "2026-05-09",
+      "check_out": "2026-05-10",
+      "nights": 1,
+      "guest": "Azwinndini Khampha",
+      "code": "k6KFf61rN1",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "Suite 322, Zimbali Suites",
+      "check_in": "2026-05-09",
+      "check_out": "2026-05-11",
+      "nights": 2,
+      "guest": "Lufefe  Mayekiso",
+      "code": "B5AjcVfA1M",
+      "fri_sat": 1,
+      "holidays": ""
+    },
+    {
+      "listing": "25 Thulana Hill, Plettenberg Bay",
+      "check_in": "2026-05-09",
+      "check_out": "2026-05-16",
+      "nights": 7,
+      "guest": "Katie Deyzel",
+      "code": "Hh4DkBoyMb",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-11",
+      "check_out": "2026-05-15",
+      "nights": 4,
+      "guest": "Mohammed Sader",
+      "code": "srBhUr48im",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Main House at Zebula 82",
+      "check_in": "2026-05-11",
+      "check_out": "2026-05-15",
+      "nights": 4,
+      "guest": "Gina Zebula 82",
+      "code": "IBWi3p69f9",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Frantoio Flatlet at 13 Olives Estate",
+      "check_in": "2026-05-12",
+      "check_out": "2026-05-19",
+      "nights": 7,
+      "guest": "Jane Tsepouras",
+      "code": "bUXfJI2sOz",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Driftwood 5, Zimbali Estate",
+      "check_in": "2026-05-12",
+      "check_out": "2026-05-15",
+      "nights": 3,
+      "guest": "Test Test",
+      "code": "K8Dw0MklBJ",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Elements Bush Villa 18",
+      "check_in": "2026-05-14",
+      "check_out": "2026-05-17",
+      "nights": 3,
+      "guest": "McLaren Gary",
+      "code": "bQ2hlyUB2V",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "13 Olives, Somerset West",
+      "check_in": "2026-05-14",
+      "check_out": "2026-05-15",
+      "nights": 1,
+      "guest": "Jane Tsepouras",
+      "code": "R6scYdZL9r",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Phezulu Villas 2, Zimbali Estate",
+      "check_in": "2026-05-14",
+      "check_out": "2026-05-18",
+      "nights": 4,
+      "guest": "Thandiwe Legwaila",
+      "code": "y5PHncnfyh",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Corals 4, Zimbali Estate",
+      "check_in": "2026-05-15",
+      "check_out": "2026-05-23",
+      "nights": 8,
+      "guest": "Phiwe  Mhlauli",
+      "code": "nC8HGt3fC7",
+      "fri_sat": 3,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-15",
+      "check_out": "2026-05-17",
+      "nights": 2,
+      "guest": "Mohammed Sader",
+      "code": "wmmUmup8Yk",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-05-15",
+      "check_out": "2026-05-17",
+      "nights": 2,
+      "guest": "Modise Moiloanyane",
+      "code": "wevOxhjnFO",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Suite 610, Zimbali Suites",
+      "check_in": "2026-05-17",
+      "check_out": "2026-05-22",
+      "nights": 5,
+      "guest": "Judy Ntuli",
+      "code": "rcygnFXtMO",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Disa Close 3, Cathkin Estates",
+      "check_in": "2026-05-18",
+      "check_out": "2026-05-22",
+      "nights": 4,
+      "guest": "Mohammed Sader",
+      "code": "eM1xRM3Doq",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Suite 108, Zimbali Suites",
+      "check_in": "2026-05-19",
+      "check_out": "2026-05-21",
+      "nights": 2,
+      "guest": "Bongeka Buthelezi",
+      "code": "5vSVE6fQnS",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Serenity, Cathkin Estates",
+      "check_in": "2026-05-19",
+      "check_out": "2026-05-21",
+      "nights": 2,
+      "guest": "Jay Weeks",
+      "code": "kGwbCwAm0a",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Serenity, Cathkin Estates",
+      "check_in": "2026-05-22",
+      "check_out": "2026-05-24",
+      "nights": 2,
+      "guest": "Jay Weeks",
+      "code": "G8SwW64EDn",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Tiny Tides, Ocean Club C9",
+      "check_in": "2026-05-22",
+      "check_out": "2026-05-24",
+      "nights": 2,
+      "guest": "Pieter Erasmus",
+      "code": "IBadtfT3fm",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Cathkin Haven,  Cathkin Estate",
+      "check_in": "2026-05-22",
+      "check_out": "2026-06-01",
+      "nights": 10,
+      "guest": "Stelli Gerrity",
+      "code": "C8OLDwQSqG",
+      "fri_sat": 4,
+      "holidays": ""
+    },
+    {
+      "listing": "Aleah, Cathkin Estates",
+      "check_in": "2026-05-22",
+      "check_out": "2026-05-29",
+      "nights": 7,
+      "guest": "Dean Mcluckie ",
+      "code": "ZL7EpIQXJz",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Zebula Lodge 118",
+      "check_in": "2026-05-24",
+      "check_out": "2026-05-29",
+      "nights": 5,
+      "guest": "Modise Moiloanyane",
+      "code": "QHUucyqXmY",
+      "fri_sat": 0,
+      "holidays": ""
+    },
+    {
+      "listing": "Ihlati 3, Zimbali Estate",
+      "check_in": "2026-05-28",
+      "check_out": "2026-06-02",
+      "nights": 5,
+      "guest": "Sylvie Pons",
+      "code": "Bmz855CrCc",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Elements Bush Villa 295",
+      "check_in": "2026-05-29",
+      "check_out": "2026-05-31",
+      "nights": 2,
+      "guest": "Shaun McCarthy",
+      "code": "1Dn0AAHIAe",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Riverside Rhapsody, Vaal River",
+      "check_in": "2026-05-29",
+      "check_out": "2026-05-31",
+      "nights": 2,
+      "guest": "Lesley Riverside Rhapsody",
+      "code": "C8jhIN9tRJ",
+      "fri_sat": 2,
+      "holidays": ""
+    },
+    {
+      "listing": "Perna Perna 20, Umdloti",
+      "check_in": "2026-05-29",
+      "check_out": "2026-05-31",
+      "nights": 2,
+      "guest": "Sean  Bergset",
+      "code": "WmOpK9PHD1",
+      "fri_sat": 2,
+      "holidays": ""
+    }
+  ]
+};
+
+function fmtDate(s) {
+  if (!s) return '';
+  const d = new Date(s);
+  if (isNaN(d)) return s;
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' });
+}
+
+function pctClass(p) {
+  if (p >= 50) return 'pct-high';
+  if (p >= 30) return 'pct-mid';
+  return 'pct-low';
+}
+
+// KPIs
+function renderKpis() {
+  const t = DATA.totals;
+  const kpis = [
+    { label: 'Owner reservations', value: t.reservations, sub: `across ${t.listings} listings` },
+    { label: 'Owner nights (Q1)', value: t.total_nights, sub: 'inside 1 Mar – 31 May' },
+    { label: 'Weekend nights', value: t.weekend_nights, sub: `${t.weekend_pct}% of owner nights` },
+    { label: 'Public holiday nights', value: t.holiday_nights, sub: 'on the 6 SA holidays' },
+  ];
+  document.getElementById('kpis').innerHTML = kpis.map(k => `
+    <div class="kpi">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>
+  `).join('');
+}
+
+// Summary table
+function renderSummary() {
+  const tbody = document.querySelector('#summary-table tbody');
+  tbody.innerHTML = DATA.summary.map(r => `
+    <tr data-weekend="${r.weekend_nights}">
+      <td class="listing-name">${r.listing}</td>
+      <td class="num">${r.stays}</td>
+      <td class="num">${r.total_nights}</td>
+      <td class="num">${r.weekend_nights}</td>
+      <td class="num"><span class="pct-bar ${pctClass(r.weekend_pct)}">${r.weekend_pct}%</span></td>
+      <td class="num">${r.holiday_nights > 0 ? `<span class="chip chip-hi">${r.holiday_nights}</span>` : r.holiday_nights}</td>
+    </tr>
+  `).join('');
+}
+
+// Holiday blocks
+function renderBlocks() {
+  const container = document.getElementById('blocks');
+  let html = '';
+  let idx = 0;
+  for (const [name, rows] of Object.entries(DATA.blocks)) {
+    const tableId = `block-${idx}`;
+    const totalNights = rows.reduce((s, r) => s + r.nights, 0);
+    const totalListings = rows.length;
+    const totalWknd = rows.reduce((s, r) => s + r.weekend_nights, 0);
+    html += `
+      <h3>${name}</h3>
+      <div class="panel">
+        <button class="copy-btn" onclick="copyTable('${tableId}', this)">Copy for Sheets</button>
+        <div class="block-summary"><strong>${totalNights}</strong> owner-nights · <strong>${totalWknd}</strong> on Fri/Sat · across <strong>${totalListings}</strong> listings</div>
+        <table id="${tableId}">
+          <thead>
+            <tr>
+              <th>Listing</th>
+              <th>Guest</th>
+              <th class="num">Nights in block</th>
+              <th class="num">Fri/Sat nights</th>
+              <th class="num">Public holiday nights</th>
+              <th>Dates occupied</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td class="listing-name">${r.listing}</td>
+                <td>${r.guest || ''}</td>
+                <td class="num">${r.nights}</td>
+                <td class="num">${r.weekend_nights > 0 ? `<span class="chip chip-warn">${r.weekend_nights}</span>` : 0}</td>
+                <td class="num">${r.holiday_nights > 0 ? `<span class="chip chip-danger">${r.holiday_nights}</span>` : 0}</td>
+                <td>${r.dates}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+    idx++;
+  }
+  container.innerHTML = html;
+}
+
+// Specific weekends
+function renderWeekend(tableId, summaryId, rows) {
+  document.getElementById(summaryId).innerHTML = `<strong>${rows.length}</strong> owner reservations covering this weekend across <strong>${new Set(rows.map(r=>r.listing)).size}</strong> listings · <strong>${rows.reduce((s,r)=>s+r.nights_in_wknd,0)}</strong> owner-nights on these two days`;
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="listing-name">${r.listing}</td>
+      <td>${r.guest_name || ''}</td>
+      <td class="num"><span class="chip chip-warn">${r.nights_in_wknd}</span></td>
+      <td>${r.days}</td>
+      <td>${fmtDate(r.check_in)}</td>
+      <td>${fmtDate(r.check_out)}</td>
+      <td class="num">${r.res_nights}</td>
+    </tr>
+  `).join('');
+}
+
+// All reservations
+function renderReservations() {
+  const tbody = document.querySelector('#res-table tbody');
+  tbody.innerHTML = DATA.reservations.map(r => `
+    <tr>
+      <td class="listing-name">${r.listing}</td>
+      <td>${fmtDate(r.check_in)}</td>
+      <td>${fmtDate(r.check_out)}</td>
+      <td class="num">${r.nights}</td>
+      <td class="num">${r.fri_sat > 0 ? `<span class="chip chip-warn">${r.fri_sat}</span>` : 0}</td>
+      <td>${r.holidays ? `<span class="chip chip-danger">${r.holidays}</span>` : ''}</td>
+      <td>${r.guest || ''}</td>
+    </tr>
+  `).join('');
+}
+
+// Filtering
+function filterTable(tableId, query) {
+  const q = query.toLowerCase();
+  document.querySelectorAll(`#${tableId} tbody tr`).forEach(tr => {
+    const txt = tr.textContent.toLowerCase();
+    tr.style.display = txt.includes(q) ? '' : 'none';
+  });
+}
+function filterWeekend() {
+  const on = document.getElementById('weekend-only').checked;
+  document.querySelectorAll('#summary-table tbody tr').forEach(tr => {
+    if (on && parseInt(tr.dataset.weekend) === 0) tr.style.display = 'none';
+    else tr.style.display = '';
+  });
+  // re-apply text filter
+  const q = document.getElementById('summary-filter').value;
+  if (q) filterTable('summary-table', q);
+}
+
+// Sorting
+function sortTable(tableId, colIdx, type) {
+  const table = document.getElementById(tableId);
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const headers = table.querySelectorAll('th');
+  const currentHeader = headers[colIdx];
+  const isDesc = currentHeader.classList.contains('sorted-desc');
+  headers.forEach(h => h.classList.remove('sorted-asc','sorted-desc'));
+  currentHeader.classList.add(isDesc ? 'sorted-asc' : 'sorted-desc');
+
+  rows.sort((a, b) => {
+    let av = a.children[colIdx].textContent.trim();
+    let bv = b.children[colIdx].textContent.trim();
+    if (type === 'num') {
+      av = parseFloat(av.replace(/[^\d.-]/g,'')) || 0;
+      bv = parseFloat(bv.replace(/[^\d.-]/g,'')) || 0;
+      return isDesc ? av - bv : bv - av;
+    }
+    return isDesc ? av.localeCompare(bv) : bv.localeCompare(av);
+  });
+  rows.forEach(r => tbody.appendChild(r));
+}
+
+// Copy to clipboard (TSV)
+function copyTable(tableId, btn) {
+  const table = document.getElementById(tableId);
+  const lines = [];
+  table.querySelectorAll('tr').forEach(tr => {
+    const cells = Array.from(tr.children).map(c => c.textContent.replace(/\s+/g,' ').trim());
+    lines.push(cells.join('\t'));
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy for Sheets'; btn.classList.remove('copied'); }, 1500);
+  });
+}
+
+renderKpis();
+renderSummary();
+renderBlocks();
+renderWeekend('last-table', 'last-summary', DATA.last_wknd);
+renderWeekend('next-table', 'next-summary', DATA.next_wknd);
+renderReservations();
+</script>
+
+</body>
+</html>
